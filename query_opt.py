@@ -10,7 +10,7 @@ from operators import Mutator,Evaluator,graph_mate
 
 import networkx as nx
 import numpy
-
+ 
 
 class Query:
     qi = 1

@@ -2,7 +2,7 @@ from neo4j import GraphDatabase,unit_of_work
 import os
 import time
 
-@unit_of_work(timeout=0.01)
+@unit_of_work(timeout=300)
 def runcypher(tx,cypher):
     return tx.run(cypher)
 
@@ -15,14 +15,18 @@ class graphdb:
     def run_query(self,cypherquery):
         start = time.time()
         print('Start query:',cypherquery)
-        with self.driver.session() as session:
-            #results = session.run(Statement(cypherquery,timeout=300))
-            #results = session.run(cypherquery,timeout=.1,wtf=123)
-            results = session.read_transaction(runcypher,cypherquery)
-        end = time.time()
-        print(f'Done. Ran for {end-start}')
-        lr = list(results)
-        return lr
+        try:
+            with self.driver.session() as session:
+                #results = session.run(Statement(cypherquery,timeout=300))
+                #results = session.run(cypherquery,timeout=.1,wtf=123)
+                results = session.read_transaction(runcypher,cypherquery)
+            end = time.time()
+            print(f'Done. Ran for {end-start}')
+            lr = list(results)
+            return lr
+        except:
+            print('Timeout')
+            return [] 
 
     def get_node_types(self):
         node_type_set = set()
