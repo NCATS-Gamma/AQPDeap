@@ -54,7 +54,8 @@ def run_algorithm():
     CXPB = 0.2
     MUTPB = 0.8
 
-    b_id = 'MONDO:0005148'
+    #b_id = 'MONDO:0005148'
+    b_id = 'MONDO:0004949'
     predicate = 'treats'
     neo = graphdb()
 
@@ -101,7 +102,8 @@ def run_algorithm():
     # no actual selection is done
     pop = toolbox.select(pop, len(pop))
 
-    with open('HOF_queries_MONDO_0005148','w') as outfile, open('POP_queries_MONDO_0005148','w') as popfile:
+    bid = '_'.join(b_id.split(':'))
+    with open(f'HOF_queries_{bid}','w') as outfile, open(f'POP_queries_{bid}','w') as popfile:
         modeaMuPlusLambda(pop, toolbox, MU, LAMBDA, CXPB, MUTPB, NGEN, stats=stats,hoff=outfile, popf=popfile,halloffame=hof)
 
 

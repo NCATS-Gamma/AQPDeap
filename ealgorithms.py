@@ -103,13 +103,11 @@ def modeaMuPlusLambda(population, toolbox, mu, lambda_, cxpb, mutpb, ngen, hoff=
 
         print(f"HOF contains {len(halloffame)} individuals")
         if hoff is not None:
-            hoff.write('Generation\tRecall\tPrecision\tquery\n')
             for q in halloffame:
                 rp = q.fitness.getValues()
                 hoff.write(f'{gen}\t{rp[0]}\t{rp[1]}\t{q}\n')
             hoff.flush()
         if popf is not None:
-            popf.write('Generation\tRecall\tPrecision\tquery\n')
             for q in population:
                 rp = q.fitness.getValues()
                 popf.write(f'{gen}\t{rp[0]}\t{rp[1]}\t{q}\n')
