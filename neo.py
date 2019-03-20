@@ -44,7 +44,7 @@ class graphdb:
         return node_types
 
     def get_edge_types(self,node_types):
-        bads = [ 'is_a','mereotopologically_related_to','Unmapped_Relation' ]
+        bads = [ 'is_a','mereotopologically_related_to','Unmapped_Relation', 'contributes_to' ]
         edge_types = {}
         for i,nt0 in enumerate(node_types):
             for nt1 in node_types[i:]:

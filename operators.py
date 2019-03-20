@@ -87,7 +87,8 @@ class Mutator:
                         self.add_edge,
                         self.remove_edge,
                         self.add_path,
-                        self.remove_node]
+                        self.remove_node,
+                        self.mutate_max_conn]
             m = random.choice(mutators)
             m_query, success= m(i_query)
             if not success:
@@ -210,6 +211,19 @@ class Mutator:
         query.graph.remove_node(d_node)
         return query,True
 
+    def mutate_max_conn(self,query):
+        sigma = 100
+        nodes = set(query.graph.nodes())
+        nodes.remove('a')
+        nodes.remove('b')
+        if len(nodes) == 0:
+            return query,False
+        d_node = random.choice(list(nodes))
+        mc = query.graph.nodes[d_node]['max_conn']
+        new = random.gauss(mc,sigma)
+        query.graph.nodes[d_node]['max_conn'] = new
+        return query,True
+
     def merge_nodes(self,query):
         nodesbytype = defaultdict(list)
         for node in query.graph.nodes():
@@ -233,7 +247,7 @@ def graph_mate(oquery1, oquery2):
     for node in query2.graph.nodes():
         if node not in ('a','b'):
             nodenames[node]=f'n{query1.next_node}'
-            query1.graph.add_node(f'n{query1.next_node}', ntype=query2.graph.nodes[node]['ntype'])
+            query1.add_node( (f'n{query1.next_node}', query2.graph.nodes[node]['ntype']) )
             query1.next_node += 1
     for n1,n2,d in query2.graph.edges(data=True):
         try:

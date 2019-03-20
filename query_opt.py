@@ -24,17 +24,16 @@ class Query:
         self.add_node(b)
         self.next_node = 0
     def add_node(self,n):
-        self.graph.add_node(n[0],ntype=n[1])
-    def get_cypher(self,b_id,max_conn=1000):
+        self.graph.add_node(n[0],ntype=n[1],max_conn=500)
+    def get_cypher(self,b_id):
         cypher = 'MATCH '
         edge_matches = [f'({s}:{self.graph.nodes[s]["ntype"]})-[:{d["edge_type"]}]-({t}:{self.graph.nodes[t]["ntype"]})'
                         for s,t,d in self.graph.edges(data=True)]
         cypher += ','.join(edge_matches)
         cypher += f' WHERE b.id="{b_id}"'
-        if max_conn > 0:
-            for node in self.graph.nodes():
-                if node != 'a' and node != 'b':
-                    cypher += f' AND size(({node})-[]-()) < {max_conn}'
+        for node in self.graph.nodes():
+            if node != 'a' and node != 'b':
+                cypher += f' AND size(({node})-[]-()) < {self.graph.nodes[node]["max_conn"]}'
         cypher += ' RETURN distinct a.id'
         return cypher
     def __repr__(self):
@@ -49,11 +48,11 @@ def createQuery(cls,m,a,b):
     return q
 
 def run_algorithm():
-    NGEN = 50
-    MU = 50
-    LAMBDA = 100
+    NGEN = 500
+    MU = 100
+    LAMBDA = 500
     CXPB = 0.2
-    MUTPB = 0.7
+    MUTPB = 0.8
 
     b_id = 'MONDO:0005148'
     predicate = 'treats'
@@ -102,8 +101,8 @@ def run_algorithm():
     # no actual selection is done
     pop = toolbox.select(pop, len(pop))
 
-    with open('HOF_queries_MONDO_0005148','w') as outfile:
-        modeaMuPlusLambda(pop, toolbox, MU, LAMBDA, CXPB, MUTPB, NGEN, stats=stats,outf=outfile, halloffame=hof)
+    with open('HOF_queries_MONDO_0005148','w') as outfile, open('POP_queries_MONDO_0005148','w') as popfile:
+        modeaMuPlusLambda(pop, toolbox, MU, LAMBDA, CXPB, MUTPB, NGEN, stats=stats,hoff=outfile, popf=popfile,halloffame=hof)
 
 
     #return pop, stats, hof

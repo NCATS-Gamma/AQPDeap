@@ -1,8 +1,8 @@
 from deap.algorithms import varOr
 from deap import tools
 
-def modeaMuPlusLambda(population, toolbox, mu, lambda_, cxpb, mutpb, ngen, outf=None,
-                   stats=None, halloffame=None, verbose=__debug__):
+def modeaMuPlusLambda(population, toolbox, mu, lambda_, cxpb, mutpb, ngen, hoff=None,
+                   popf=None,stats=None, halloffame=None, verbose=__debug__):
     """This is the :math:`(\mu + \lambda)` evolutionary algorithm.
 
     :param population: A list of individuals.
@@ -66,6 +66,14 @@ def modeaMuPlusLambda(population, toolbox, mu, lambda_, cxpb, mutpb, ngen, outf=
     if verbose:
         print(logbook.stream)
 
+
+    if hoff is not None:
+        hoff.write('Generation\tRecall\tPrecision\tquery\n')
+    if popf is not None:
+        popf.write('Generation\tRecall\tPrecision\tquery\n')
+
+
+
     # Begin the generational process
     for gen in range(1, ngen + 1):
         # Vary the population
@@ -94,15 +102,19 @@ def modeaMuPlusLambda(population, toolbox, mu, lambda_, cxpb, mutpb, ngen, outf=
 
 
         print(f"HOF contains {len(halloffame)} individuals")
-        if outf is not None:
-            outf.write('Generation\tRecallPrecision\tquery\n')
+        if hoff is not None:
+            hoff.write('Generation\tRecall\tPrecision\tquery\n')
             for q in halloffame:
-                outf.write(str(gen))
-                outf.write('\t')
-                outf.write(str(q.fitness))
-                outf.write('\t')
-                outf.write(str(q))
-                outf.write('\n')
-            outf.flush()
+                rp = q.fitness.getValues()
+                hoff.write(f'{gen}\t{rp[0]}\t{rp[1]}\t{q}\n')
+            hoff.flush()
+        if popf is not None:
+            popf.write('Generation\tRecall\tPrecision\tquery\n')
+            for q in population:
+                rp = q.fitness.getValues()
+                popf.write(f'{gen}\t{rp[0]}\t{rp[1]}\t{q}\n')
+            popf.flush()
+
+
 
     return population, logbook
